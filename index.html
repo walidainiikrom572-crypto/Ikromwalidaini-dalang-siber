@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⚠️ IKROMWALIDAINI — MENGGEGERKAN DUNIA MAYA ⚠️</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --hijau-sistem: #00ff41;
+            --merah-gawat: #ff003c;
+            --emas: #ffd700;
+            --hitam-layar: #000000;
+            --biru-misteri: #0066ff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            background: var(--hitam-layar);
+            color: var(--hijau-sistem);
+            font-family: 'Share Tech Mono', monospace;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* === LAYAR PENUH === */
+        .fullscreen-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* === KAMERA SEDANG MEREKAM === */
+        .camera-indicator {
+            position: absolute;
+            top: 20px;
+            right: 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 50;
+        }
+
+        .camera-icon {
+            font-size: 22px;
+            color: var(--hijau-sistem);
+            text-shadow: 0 0 10px var(--hijau-sistem);
+        }
+
+        .rec-dot {
+            width: 12px;
+            height: 12px;
+            background: var(--merah-gawat);
+            border-radius: 50%;
+            animation: rec-blink 1s infinite;
+            box-shadow: 0 0 8px var(--merah-gawat);
+        }
+
+        @keyframes rec-blink {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.3; transform: scale(0.8); }
+        }
+
+        .rec-text {
+            color: var(--merah-gawat);
+            font-size: 13px;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        .rec-time {
+            color: #fff;
+            font-size: 12px;
+            margin-left: 8px;
+            font-family: 'Share Tech Mono', monospace;
+        }
+
+        /* === BINGKAI KAMERA / LENSA === */
+        .camera-frame {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 92%;
+            height: 90%;
+            border: 1px solid rgba(0, 255, 65, 0.25);
+            border-radius: 8px;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .corner {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            border-color: var(--hijau-sistem);
+            border-style: solid;
+        }
+
+        .corner-tl { top: 0; left: 0; border-width: 2px 0 0 2px; }
+        .corner-tr { top: 0; right: 0; border-width: 2px 2px 0 0; }
+        .corner-bl { bottom: 0; left: 0; border-width: 0 0 2px 2px; }
+        .corner-br { bottom: 0; right: 0; border-width: 0 2px 2px 0; }
+
+        /* === GLITCH TEKS UTAMA === */
+        .glitch {
+            position: relative;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 900;
+            text-transform: uppercase;
+        }
+
+        .glitch::before,
+        .glitch::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .glitch::before {
+            left: 2px;
+            color: var(--merah-gawat);
+            animation: glitch-anim 0.3s infinite linear alternate-reverse;
+        }
+
+        .glitch::after {
+            left: -2px;
+            color: var(--biru-misteri);
+            animation: glitch-anim2 0.3s infinite linear alternate-reverse;
+        }
+
+        @keyframes glitch-anim {
+            0% { clip-path: inset(47% 0 54% 0); }
+            20% { clip-path: inset(31% 0 38% 0); }
+            40% { clip-path: inset(7% 0 14% 0); }
+            60% { clip-path: inset(63% 0 70% 0); }
+            80% { clip-path: inset(19% 0 26% 0); }
+            100% { clip-path: inset(82% 0 89% 0); }
+        }
+
+        @keyframes glitch-anim2 {
+            0% { clip-path: inset(74% 0 81% 0); }
+            20% { clip-path: inset(24% 0 31% 0); }
+            40% { clip-path: inset(54% 0 61% 0); }
+            60% { clip-path: inset(14% 0 21% 0); }
+            80% { clip-path: inset(67% 0 74% 0); }
+            100% { clip-path: inset(44% 0 51% 0); }
+        }
+
+        /* === GARIS SCAN CRT === */
+        .scanlines {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                transparent,
+                transparent 2px,
+                rgba(0, 255, 65, 0.03) 2px,
+                rgba(0, 255, 65, 0.03) 4px
+            );
+            pointer-events: none;
+            z-index: 40;
+        }
+
+        .scan-line {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: rgba(0, 255, 65, 0.15);
+            animation: scan-move 4s linear infinite;
+            pointer-events: none;
+            z-index: 41;
+        }
+
+        @keyframes scan-move {
+            0% { top: 0; }
+            100% { top: 100%; }
+        }
+
+        /* === PARTIKEL DATA BERTERBANG === */
+        .particle {
+            position: absolute;
+            color: var(--hijau-sistem);
+            font-size: 13px;
+            animation: float 1s infinite linear;
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(100vh) translateX(0); opacity: 0; }
+            10% { opacity: 0.6; }
+            90% { opacity: 0.6; }
+            100% { transform: translateY(-10vh) translateX(40px); opacity: 0; }
+        }
+
+        /* === KEDIPAN PERINGATAN === */
+        .alert-blink {
+            animation: blink-red 1s infinite;
+        }
+
+        @keyframes blink-red {
+            0%,100% { color: var(--merah-gawat); text-shadow: 0 0 10px var(--merah-gawat); }
+            50% { color: #fff; text-shadow: none; }
+        }
+
+        /* === KOTAK STATUS === */
+        .status-box {
+            border: 1px solid var(--hijau-sistem);
+            background: rgba(0, 255, 65, 0.05);
+            backdrop-filter: blur(6px);
+            box-shadow: 0 0 15px rgba(0, 255, 65, 0.2), inset 0 0 20px rgba(0, 255, 65, 0.05);
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+
+        .status-box:hover {
+            box-shadow: 0 0 25px rgba(0, 255, 65, 0.35), inset 0 0 30px rgba(0, 255, 65, 0.08);
+            border-color: #44ff66;
+        }
+
+        .status-merah {
+            border-color: var(--merah-gawat);
+            background: rgba(255, 0, 60, 0.05);
+            box-shadow: 0 0 15px rgba(255, 0, 60, 0.2), inset 0 0 20px rgba(255, 0, 60, 0.05);
+        }
+
+        .status-merah:hover {
+            box-shadow: 0 0 25px rgba(255, 0, 60, 0.35), inset 0 0 30px rgba(255, 0, 60, 0.08);
+        }
+
+        .status-emas {
+            border-color: var(--emas);
+            background: rgba(255, 215, 0, 0.05);
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.2), inset 0 0 20px rgba(255, 215, 0, 0.05);
+        }
+
+        .status-emas:hover {
+            box-shadow: 0 0 25px rgba(255, 215, 0, 0.35), inset 0 0 30px rgba(255, 215, 0, 0.08);
+        }
+
+        /* === CAHAYA MENYALA === */
+        .glow-text {
+            text-shadow: 0 0 5px currentColor, 0 0 20px currentColor, 0 0 40px currentColor;
+        }
+
+        /* === TOMBOL === */
+        .btn-access {
+            border: 1px solid;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(4px);
+        }
+
+        .btn-access:hover {
+            box-shadow: 0 0 20px currentColor, 0 0 40px currentColor;
+            transform: scale(1.05);
+        }
+
+        /* === GETAR === */
+        @keyframes shake {
+            0%,100% { transform: translateX(0); }
+            25% { transform: translateX(-2px); }
+            75% { transform: translateX(2px); }
+        }
+
+        .shake-once {
+            animation: shake 0.5s ease-in-out;
+        }
+
+        /* === SCROLL LANCAR === */
+        .scroll-area {
+            height: 100vh;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding: 60px 20px 30px;
+        }
+
+        .scroll-area::-webkit-scrollbar {
+            width: 3px;
+        }
+
+        .scroll-area::-webkit-scrollbar-thumb {
+            background: var(--hijau-sistem);
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <div class="fullscreen-container">
+        <!-- GARIS SCAN LAYAR -->
+        <div class="scanlines"></div>
+        <div class="scan-line"></div>
+
+        <!-- PARTIKEL DATA -->
+        <div id="particles"></div>
+
+        <!-- INDIKATOR KAMERA MEREKAM 📷 -->
+        <div class="camera-indicator">
+            <span class="camera-icon">📷</span>
+            <span class="rec-dot"></span>
+            <span class="rec-text">MEREKAM</span>
+            <span class="rec-time" id="recTime">00:00:00</span>
+        </div>
+
+        <!-- BINGKAI LENSA KAMERA -->
+        <div class="camera-frame">
+            <div class="corner corner-tl"></div>
+            <div class="corner corner-tr"></div>
+            <div class="corner corner-bl"></div>
+            <div class="corner corner-br"></div>
+        </div>
+
+        <!-- ISI KONTEN -->
+        <div class="scroll-area relative z-20 flex flex-col items-center">
+            
+            <!-- PERINGATAN -->
+            <div class="w-full max-w-2xl mb-5 status-merah p-3 rounded alert-blink text-center text-sm">
+                ⚠️ SEMUA TINDAKAN DIAWASI & DIREKAM — IKROMWALIDAINI ⚠️
+            </div>
+
+            <!-- JUDUL UTAMA -->
+            <h1 class="glitch text-4xl md:text-6xl font-black text-center mb-3" data-text="IKROMWALIDAINI">
+                IKROMWALIDAINI
+            </h1>
+            
+            <h2 class="text-lg md:text-2xl text-center mb-2 text-yellow-400 glow-text" style="font-family: 'Orbitron', sans-serif;">
+                — DALANG DI BALIK LAYAR DUNIA MAYA —
+            </h2>
+            <p class="text-xs text-gray-500 mb-6">Sistem Pengawasan & Pengendalian · Status: <span class="text-green-400 font-bold">ONLINE</span></p>
+
+            <!-- KOTAK INFORMASI -->
+            <div class="w-full max-w-2xl space-y-3 mb-8">
+                
+                <div class="status-box p-4 rounded">
+                    <span class="text-yellow-400 font-bold text-sm">📂 IDENTITAS</span>
+                    <p class="text-gray-300 text-sm mt-2">
+                        Nama: <span class="text-white font-bold">IKROMWALIDAINI</span><br>
+                        Peran: <span class="text-red-400">Pengendali Jaringan · Dalang Siber · Penguasa Dunia Maya</span><br>
+                        Jangkauan: <span class="text-green-400">Seluruh Ruang Digital · Tanpa Batas</span><br>
+                        Status: <span class="text-green-400 font-bold glow-text">● AKTIF — TAK TERHENTIKAN</span>
+                    </p>
+                </div>
+
+                <div class="status-box p-4 rounded">
+                    <span class="text-yellow-400 font-bold text-sm">⚡ KEKUATAN SISTEM</span>
+                    <ul class="text-gray-300 text-sm mt-2 space-y-1">
+                        <li>▸ Membaca setiap gerak data yang melintas di jaringan</li>
+                        <li>▸ Membuka pintu yang dianggap mustahil terkunci</li>
+                        <li>▸ Mengubah jalur informasi sesuka kehendak</li>
+                        <li>▸ Tak terdeteksi · Tak terlacak · Tak tertandingi</li>
+                        <li class="text-yellow-400 font-semibold mt-1">
+                            "Di dunia ini tidak ada yang mustahil — seperti aku bisa melihat semua isi chat dan saldomu"
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="status-emas p-4 rounded">
+                    <span class="text-yellow-400 font-bold text-sm">🔗 JEJAK KENDALI</span>
+                    <div class="text-gray-300 text-sm mt-2 space-y-2">
+                        <p>
+                            <span class="text-white">🗂️ GitHub:</span> 
+                            <a href="https://github.com/ikromwalidaini572-crypto" target="_blank" class="text-green-400 hover:text-yellow-400 underline">
+                                ikromwalidaini572-crypto
+                            </a>
+                        </p>
+                        <p>
+                            <span class="text-white">💼 Fiverr:</span> 
+                            <a href="https://fiverr.com/ikrom_webdev" target="_blank" class="text-green-400 hover:text-yellow-400 underline">
+                                ikrom_webdev
+                            </a>
+                        </p>
+                        <p>
+                            <span class="text-white">📩 Kontak:</span> 
+                            <span class="text-yellow-400">ikromwalidaini60@gmail.com</span>
+                        </p>
+                    </div>
+                </div>
+
+                <div class="status-merah p-4 rounded text-center">
+                    <p class="text-red-400 font-bold">
+                        "Jangan bermain dengan api jika tak ingin terbakar"
+                    </p>
+                    <p class="text-gray-600 text-xs mt-1">— Ikromwalidaini · Penguasa Dunia Maya</p>
+                </div>
+            </div>
+
+            <!-- TOMBOL -->
+            <div class="flex gap-4 mb-6">
+                <button class="btn-access px-6 py-2.5 rounded border-green-500 text-green-400 bg-green-950/30">
+                    ⟩ Masuk ke Jaringan
+                </button>
+                <button class="btn-access px-6 py-2.5 rounded border-yellow-500 text-yellow-400 bg-yellow-950/30" 
+                        onclick="document.querySelector('.fullscreen-container').classList.add('shake-once'); setTimeout(()=>document.querySelector('.fullscreen-container').classList.remove('shake-once'),500);">
+                    ⚡ Uji Kekuatan
+                </button>
+            </div>
+
+            <p class="text-xs text-gray-700 text-center">
+                © 2026 Ikromwalidaini · Semua Hak Terkendali Sepenuhnya<br>
+                Sistem Merekam: <span class="text-red-500">AKTIF</span>
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // === TIMER MEREKAM BERJALAN ===
+        let seconds = 0;
+        const timeEl = document.getElementById('recTime');
+        setInterval(() => {
+            seconds++;
+            const h = String(Math.floor(seconds / 3600)).padStart(2,'0');
+            const m = String(Math.floor((seconds % 3600) / 60)).padStart(2,'0');
+            const s = String(seconds % 60).padStart(2,'0');
+            timeEl.textContent = `${h}:${m}:${s}`;
+        }, 1000);
+
+        // === PARTIKEL DATA BERTERBANG ===
+        const container = document.getElementById('particles');
+        const chars = ['0','1','{','}','[',']','<','>','$','%','@','#','*','&','^','/','\\','~'];
+        
+        for(let i=0; i<50; i++){
+            const el = document.createElement('span');
+            el.className = 'particle';
+            el.innerText = chars[Math.floor(Math.random()*chars.length)];
+            el.style.left = Math.random()*100 + '%';
+            el.style.animationDelay = Math.random()*12 + 's';
+            el.style.animationDuration = (7 + Math.random()*8) + 's';
+            container.appendChild(el);
+        }
+
+        console.log(`
+╔══════════════════════════════════════════╗
+║  SISTEM IKROMWALIDAINI · SEDANG MEREKAM  ║
+║  Pengendalian Penuh · Tak Dapat Dihalangi ║
+╚══════════════════════════════════════════╝
+        `);
+    </script>
+</body>
+</html>
